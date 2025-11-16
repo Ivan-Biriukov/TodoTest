@@ -10,12 +10,14 @@ protocol HomeBusinessLogic {
 
 final class HomeInteractor {
     private let storage: TasksStorageServicable
+    private let networkService: NetworkServiceProtocol
     weak var presenter: HomeInteractorOutput?
     
     private var allTodos: [UITodoItem] = []
     
-    init(storage: TasksStorageServicable) {
+    init(storage: TasksStorageServicable, networkService: NetworkServiceProtocol) {
         self.storage = storage
+        self.networkService = networkService
     }
 }
 
@@ -107,7 +109,28 @@ extension HomeInteractor: HomeBusinessLogic {
 
 //MARK: - Private methods
 private extension HomeInteractor {
-    private func loadTodosFromAPI() {
-        
+    func loadTodosFromAPI() {
+        networkService.fetchTodos { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let apiTodos):
+                let uiTodos = apiTodos.map { UITodoItem(from: $0) }
+                self.allTodos = uiTodos
+                
+                DispatchQueue.global(qos: .background).async {
+                    uiTodos.forEach { self.storage.addTask($0) }
+                }
+                
+                DispatchQueue.main.async {
+                    self.presenter?.didFetchTodos(uiTodos)
+                }
+                
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self.presenter?.didFailToFetchTodos(with: error)
+                }
+            }
+        }
     }
 }

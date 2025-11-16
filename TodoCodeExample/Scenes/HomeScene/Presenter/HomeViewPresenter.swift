@@ -23,7 +23,6 @@ protocol HomeInteractorOutput: AnyObject {
 final class HomeViewPresenter<Routes: HomeRoutes> {
     weak var view: HomeViewPresentable?
     var interactor: HomeBusinessLogic?
-//    var router: HomeRoutes?
     
     private var todos: [UITodoItem] = []
     private var filteredTodos: [UITodoItem] = []
@@ -95,23 +94,23 @@ extension HomeViewPresenter: HomeInteractorOutput {
     func didFailToFetchTodos(with error: Error) {
         view?.hideLoading()
         
-//        let errorMessage: String
-//        if let networkError = error as? NetworkError {
-//            switch networkError {
-//            case .invalidURL:
-//                errorMessage = "Неверный URL"
-//            case .noData:
-//                errorMessage = "Нет данных"
-//            case .decodingError:
-//                errorMessage = "Ошибка обработки данных"
-//            case .serverError(let message):
-//                errorMessage = "Ошибка сервера: \(message)"
-//            }
-//        } else {
-//            errorMessage = error.localizedDescription
-//        }
-//        
-//        view?.showError(errorMessage)
+        let errorMessage: String
+        if let networkError = error as? NetworkError {
+            switch networkError {
+            case .invalidURL:
+                errorMessage = "Неверный URL"
+            case .noData:
+                errorMessage = "Нет данных"
+            case .decodingError:
+                errorMessage = "Ошибка обработки данных"
+            case .serverError(let message):
+                errorMessage = "Ошибка сервера: \(message)"
+            }
+        } else {
+            errorMessage = error.localizedDescription
+        }
+        
+        view?.showError(errorMessage)
     }
     
     func didToggleTodoCompletion(updatedTodo: UITodoItem, at index: Int) {

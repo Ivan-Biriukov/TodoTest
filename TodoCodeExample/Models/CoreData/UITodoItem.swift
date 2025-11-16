@@ -51,3 +51,13 @@ extension UITodoItem: Hashable {
         hasher.combine(isComplited)
     }
 }
+
+extension UITodoItem {
+    init(from apiItem: TodoAPIItem) {
+        self.id = UUID()
+        self.userId = apiItem.userId
+        self.creationDate = Date()
+        self.todoDescription = apiItem.todo
+        self.isComplited = apiItem.completed
+    }
+}

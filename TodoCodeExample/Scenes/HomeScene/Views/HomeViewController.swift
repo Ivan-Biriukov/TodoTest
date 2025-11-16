@@ -55,6 +55,7 @@ private extension HomeViewController {
     
     private func setupTableView() {
         contentView.tableView.delegate = self
+        contentView.tableView.dataSource = self
     }
     
     private func setupCallbacks() {
