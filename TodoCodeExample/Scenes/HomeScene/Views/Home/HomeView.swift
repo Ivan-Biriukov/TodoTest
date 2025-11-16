@@ -217,6 +217,10 @@ private extension HomeView {
         customTabBar.addSubview(addButton)
         
         setupConstraints()
+        
+        let bottomInset = k.customTabBarHeight + safeAreaInsets.bottom
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+        tableView.scrollIndicatorInsets = tableView.contentInset
     }
     
     func setupConstraints() {
@@ -325,5 +329,20 @@ extension HomeView {
     func clearSearch() {
         searchBar.text = ""
         searchBar.resignFirstResponder()
+    }
+    
+    func updateCenterLabel(with todosCount: Int) {
+        let text: String
+        switch todosCount {
+        case 0:
+            text = "Нет задач"
+        case 1:
+            text = "1 задача"
+        case 2...4:
+            text = "\(todosCount) задачи"
+        default:
+            text = "\(todosCount) задач"
+        }
+        centerLabel.text = text
     }
 }

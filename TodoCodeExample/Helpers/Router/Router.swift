@@ -42,7 +42,6 @@ extension Router {
 
 //MARK: - Home View Routes
 extension Router: HomeRoutes {
-    
     static func navigateToTodoDetail(
         from presenter: HomeViewPresenterProtocol,
         todo: UITodoItem,
@@ -87,5 +86,20 @@ extension Router: HomeRoutes {
         alert.addAction(addAction)
         
         navigationController.visibleViewController?.present(alert, animated: true)
+    }
+    
+    static func shareTodo(_ todo: UITodoItem) {
+        let text = "\(todo.todoDescription)"
+        
+        let activityVC = UIActivityViewController(
+            activityItems: [text],
+            applicationActivities: nil
+        )
+        
+        guard let fromVC = navigationController.visibleViewController else { return }
+        
+        activityVC.popoverPresentationController?.sourceView = fromVC.view
+        
+        fromVC.present(activityVC, animated: true)
     }
 }

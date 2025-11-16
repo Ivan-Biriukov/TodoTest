@@ -9,6 +9,7 @@ protocol HomeViewPresenterProtocol: AnyObject {
     func didTapDeleteTodo(at index: Int)
     func didSearchTodos(with query: String)
     func didUpdateTodo(_ todo: UITodoItem, at index: Int)
+    func didTapShare(_ item: UITodoItem)
 }
 
 // MARK: - Протокол для Interactor -> Presenter (обратная связь)
@@ -32,6 +33,9 @@ final class HomeViewPresenter<Routes: HomeRoutes> {
 
 // MARK: - View -> Presenter (пользовательские действия)
 extension HomeViewPresenter: HomeViewPresenterProtocol {
+    func didTapShare(_ item: UITodoItem) {
+        Router.shareTodo(item)
+    }
     
     func viewDidLoad() {
         view?.showLoading()

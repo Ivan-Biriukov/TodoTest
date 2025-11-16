@@ -8,4 +8,6 @@ protocol HomeRoutes: AnyObject {
     )
     
     static func navigateToAddTodo(completion: @escaping (UITodoItem) -> Void)
+    
+    static func shareTodo(_ todo: UITodoItem)
 }

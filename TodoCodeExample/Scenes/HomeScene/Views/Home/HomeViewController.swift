@@ -80,6 +80,7 @@ extension HomeViewController: HomeViewPresentable {
         self.todos = todos
         contentView.tableView.reloadData()
         contentView.showEmptyState(todos.isEmpty)
+        contentView.updateCenterLabel(with: todos.count)
     }
     
     func showLoading() {
@@ -130,7 +131,6 @@ extension HomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        // Действие "Редактировать"
         let editAction = UIContextualAction(style: .normal, title: "Редактировать") { [weak self] _, _, completion in
             self?.presenter.didSelectTodo(at: indexPath.row)
             completion(true)
@@ -138,7 +138,6 @@ extension HomeViewController: UITableViewDelegate {
         editAction.image = UIImage(systemName: "pencil")
         editAction.backgroundColor = .systemBlue
         
-        // Действие "Удалить"
         let deleteAction = UIContextualAction(style: .destructive, title: "Удалить") { [weak self] _, _, completion in
             self?.showConfirmationAlert(
                 title: "Удалить задачу?",
@@ -157,7 +156,7 @@ extension HomeViewController: UITableViewDelegate {
         
         return configuration
     }
-    
+
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
@@ -165,18 +164,6 @@ extension HomeViewController: UITableViewDelegate {
             
             let todo = self.todos[indexPath.row]
             
-            // Действие "Выполнено/Не выполнено"
-            let toggleTitle = todo.isComplited ? "Отметить как невыполненное" : "Отметить как выполненное"
-            let toggleImage = todo.isComplited ? "circle" : "checkmark.circle.fill"
-            
-            let toggleAction = UIAction(
-                title: toggleTitle,
-                image: UIImage(systemName: toggleImage)
-            ) { _ in
-                self.presenter.didToggleTodoCompletion(at: indexPath.row)
-            }
-            
-            // Действие "Редактировать"
             let editAction = UIAction(
                 title: "Редактировать",
                 image: UIImage(systemName: "pencil")
@@ -184,7 +171,13 @@ extension HomeViewController: UITableViewDelegate {
                 self.presenter.didSelectTodo(at: indexPath.row)
             }
             
-            // Действие "Удалить"
+            let shareAction = UIAction(
+                title: "Поделиться",
+                image: UIImage(systemName: "square.and.arrow.up")
+            ) { _ in
+                self.presenter.didTapShare(todo)
+            }
+            
             let deleteAction = UIAction(
                 title: "Удалить",
                 image: UIImage(systemName: "trash"),
@@ -199,7 +192,7 @@ extension HomeViewController: UITableViewDelegate {
                 }
             }
             
-            return UIMenu(title: "", children: [toggleAction, editAction, deleteAction])
+            return UIMenu(title: "", children: [editAction, shareAction, deleteAction])
         }
     }
 }
