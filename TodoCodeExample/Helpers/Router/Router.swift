@@ -89,22 +89,3 @@ extension Router: HomeRoutes {
         navigationController.visibleViewController?.present(alert, animated: true)
     }
 }
-//extension Router: HomeRoutes {
-//    static func navigateToTodoDetail(todo: UITodoItem) {
-//        // TODO: Реализовать когда будет готов DetailFactory
-//        print("Navigate to detail for todo: \(todo.todoDescription)")
-//        
-//        // Пока заглушка, потом заменим на:
-//        // let context = DetailFactory.Context(todo: todo)
-//        // performRoute(factory: DetailFactory(), context: context)
-//    }
-//    
-//    static func navigateToAddTodo(completion: @escaping (UITodoItem) -> Void) {
-//        // TODO: Реализовать когда будет готов AddTodoFactory
-//        print("Navigate to add todo")
-//        
-//        // Пока заглушка, потом заменим на:
-//        // let context = AddTodoFactory.Context(completion: completion)
-//        // performPopUpRoute(factory: AddTodoFactory(), context: context)
-//    }
-//}

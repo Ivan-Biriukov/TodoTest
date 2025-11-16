@@ -1,35 +1,66 @@
 import UIKit
 import SnapKit
 
-final class HomeView: UIView {
+fileprivate struct Constants {
+    let titleLabelFontSize: CGFloat = 34
+    let tableSeporaterEdgeInsets: UIEdgeInsets = .init(top: 0, left: 20, bottom: 0, right: 20)
+    let tableEstimatedRowHeight: CGFloat = 80
+    let emptyLabelFontSize: CGFloat = 20
+    let emptyStateSubtitleFontSize: CGFloat = 14
     
-    // MARK: - Callbacks
+    let navBarContainerHeight: CGFloat = 52
+    let titleLabelHOffsets: CGFloat = 16
+    
+    let addButtonTrailingInsets: CGFloat = 20
+    let addButtonSize: CGFloat = 28
+    let addButtonTopOffset: CGFloat = 10
+    let searchBarHeight: CGFloat = 56
+    
+    let emptyStateImageViewCentYOffset: CGFloat = 60
+    let emptyStateImageViewHeight: CGFloat = 80
+    
+    let emptyStateLabelTopOffset: CGFloat = 20
+    let emptyStateLabelLeadingOffset: CGFloat = 40
+    let emptyStateLabelTrailingInsets: CGFloat = 40
+    
+    let emptyStateSubtitleLabelTopOffset: CGFloat = 8
+    let emptyStateSubtitleLabelLeadingOffset: CGFloat = 40
+    let emptyStateSubtitleLabelTrailingInset: CGFloat = 40
+    
+    let centerLabelFontSize: CGFloat = 11
+    let centerLabelTopOffset: CGFloat = 20
+    
+    let customTabBarHeight: CGFloat = 83
+}
+
+//MARK: - HomeView
+final class HomeView: UIView {
     var onAddButtonTapped: (() -> Void)?
     var onCellTapped: ((IndexPath) -> Void)?
     var onCheckmarkTapped: ((IndexPath) -> Void)?
     var onDeleteTapped: ((IndexPath) -> Void)?
     var onSearchTextChanged: ((String) -> Void)?
     
-    // MARK: - UI Components
+    private let k = Constants()
     
-    // Navigation Bar (кастомная, если нужна)
-    private let navigationBarContainer: UIView = {
+    // MARK: - UI Components
+    private lazy var navigationBarContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .black
+        view.backgroundColor = .clear
         return view
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.text = "Задачи"
-        lbl.font = .systemFont(ofSize: 34, weight: .bold)
+        lbl.font = .systemFont(ofSize: k.titleLabelFontSize, weight: .bold)
         lbl.textColor = .white
         return lbl
     }()
     
-    let addButton: UIButton = {
+    private lazy var addButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.translatesAutoresizingMaskIntoConstraints = false
         btn.setImage(UIImage(systemName: "square.and.pencil"), for: .normal)
@@ -40,7 +71,7 @@ final class HomeView: UIView {
     }()
     
     // Search Bar
-    let searchBar: UISearchBar = {
+    private lazy var searchBar: UISearchBar = {
         let sb = UISearchBar()
         sb.translatesAutoresizingMaskIntoConstraints = false
         sb.placeholder = "Search"
@@ -49,13 +80,12 @@ final class HomeView: UIView {
         sb.barTintColor = .black
         sb.backgroundColor = .black
         
-        // Кастомизация текстового поля
+        
         if let textField = sb.value(forKey: "searchField") as? UITextField {
-            textField.backgroundColor = UIColor.systemGray6.withAlphaComponent(0.2)
+            textField.backgroundColor = UIColor.TodoColors.bgGray
             textField.textColor = .white
             textField.leftView?.tintColor = .systemGray
             
-            // Placeholder цвет
             textField.attributedPlaceholder = NSAttributedString(
                 string: "Search",
                 attributes: [.foregroundColor: UIColor.systemGray]
@@ -65,23 +95,22 @@ final class HomeView: UIView {
         return sb
     }()
     
-    // Table View
-    let tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let tv = UITableView(frame: .zero, style: .plain)
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.backgroundColor = .black
         tv.separatorStyle = .singleLine
         tv.separatorColor = .systemGray5
-        tv.separatorInset = UIEdgeInsets(top: 0, left: 56, bottom: 0, right: 0)
+        tv.separatorInset = k.tableSeporaterEdgeInsets
         tv.register(TodoTableViewCell.self, forCellReuseIdentifier: TodoTableViewCell.reuseIdentifier)
         tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 80
+        tv.estimatedRowHeight = k.tableEstimatedRowHeight
         tv.keyboardDismissMode = .onDrag
         return tv
     }()
     
     // Empty State View
-    private let emptyStateView: UIView = {
+    private lazy var emptyStateView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .black
@@ -89,7 +118,7 @@ final class HomeView: UIView {
         return view
     }()
     
-    private let emptyStateImageView: UIImageView = {
+    private lazy var emptyStateImageView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.image = UIImage(systemName: "checkmark.circle")
@@ -98,28 +127,41 @@ final class HomeView: UIView {
         return iv
     }()
     
-    private let emptyStateLabel: UILabel = {
+    private lazy var emptyStateLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.text = "Нет задач"
-        lbl.font = .systemFont(ofSize: 20, weight: .medium)
+        lbl.font = .systemFont(ofSize: k.emptyLabelFontSize, weight: .medium)
         lbl.textColor = .systemGray
         lbl.textAlignment = .center
         return lbl
     }()
     
-    private let emptyStateSubtitleLabel: UILabel = {
+    private lazy var emptyStateSubtitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.text = "Нажмите + чтобы добавить новую задачу"
-        lbl.font = .systemFont(ofSize: 14, weight: .regular)
+        lbl.font = .systemFont(ofSize: k.emptyStateSubtitleFontSize, weight: .regular)
         lbl.textColor = .systemGray2
         lbl.textAlignment = .center
         lbl.numberOfLines = 0
         return lbl
     }()
     
-    // Loading View
+    private lazy var customTabBar: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.TodoColors.bgGray
+        return v
+    }()
+
+    private lazy var centerLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "7 задач"
+        lbl.textColor = UIColor.TodoColors.textWhite
+        lbl.font = .systemFont(ofSize: k.centerLabelFontSize, weight: .regular)
+        return lbl
+    }()
+    
     private lazy var loadingView = LoadingView()
     
     // MARK: - Initialization
@@ -159,7 +201,6 @@ private extension HomeView {
         
         addSubview(navigationBarContainer)
         navigationBarContainer.addSubview(titleLabel)
-        navigationBarContainer.addSubview(addButton)
         
         addSubview(searchBar)
         addSubview(tableView)
@@ -171,34 +212,38 @@ private extension HomeView {
         
         addSubview(loadingView)
         
+        addSubview(customTabBar)
+        customTabBar.addSubview(centerLabel)
+        customTabBar.addSubview(addButton)
+        
         setupConstraints()
     }
     
-     func setupConstraints() {
+    func setupConstraints() {
         navigationBarContainer.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
-            make.height.equalTo(52)
+            make.height.equalTo(k.navBarContainerHeight)
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(navigationBarContainer.snp.leading).offset(16)
+            make.leading.equalTo(navigationBarContainer.snp.leading).offset(k.titleLabelHOffsets)
             make.centerY.equalTo(navigationBarContainer.snp.centerY)
-            make.trailing.lessThanOrEqualTo(addButton.snp.leading).offset(-16)
+            make.trailing.lessThanOrEqualTo(addButton.snp.leading).offset(-k.titleLabelHOffsets)
         }
         
         addButton.snp.makeConstraints { make in
-            make.trailing.equalTo(navigationBarContainer.snp.trailing).inset(16)
-            make.centerY.equalTo(navigationBarContainer.snp.centerY)
-            make.width.height.equalTo(28)
+            make.top.equalTo(customTabBar.snp.top).offset(k.addButtonTopOffset)
+            make.trailing.equalToSuperview().inset(k.addButtonTrailingInsets)
+            make.width.height.equalTo(k.addButtonSize)
         }
         
         searchBar.snp.makeConstraints { make in
             make.top.equalTo(navigationBarContainer.snp.bottom)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
-            make.height.equalTo(56)
+            make.height.equalTo(k.searchBarHeight)
         }
         
         tableView.snp.makeConstraints { make in
@@ -217,20 +262,31 @@ private extension HomeView {
         
         emptyStateImageView.snp.makeConstraints { make in
             make.centerX.equalTo(emptyStateView.snp.centerX)
-            make.centerY.equalTo(emptyStateView.snp.centerY).offset(-60)
-            make.width.height.equalTo(80)
+            make.centerY.equalTo(emptyStateView.snp.centerY).offset(-k.emptyStateImageViewCentYOffset)
+            make.width.height.equalTo(k.emptyStateImageViewHeight)
         }
         
         emptyStateLabel.snp.makeConstraints { make in
-            make.top.equalTo(emptyStateImageView.snp.bottom).offset(20)
-            make.leading.equalTo(emptyStateView.snp.leading).offset(40)
-            make.trailing.equalTo(emptyStateView.snp.trailing).inset(40)
+            make.top.equalTo(emptyStateImageView.snp.bottom).offset(k.emptyStateLabelTopOffset)
+            make.leading.equalTo(emptyStateView.snp.leading).offset(k.emptyStateLabelLeadingOffset)
+            make.trailing.equalTo(emptyStateView.snp.trailing).inset(k.emptyStateLabelTrailingInsets)
         }
         
         emptyStateSubtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(emptyStateLabel.snp.bottom).offset(8)
-            make.leading.equalTo(emptyStateView.snp.leading).offset(40)
-            make.trailing.equalTo(emptyStateView.snp.trailing).inset(40)
+            make.top.equalTo(emptyStateLabel.snp.bottom).offset(k.emptyStateSubtitleLabelTopOffset)
+            make.leading.equalTo(emptyStateView.snp.leading).offset(k.emptyStateSubtitleLabelLeadingOffset)
+            make.trailing.equalTo(emptyStateView.snp.trailing).inset(k.emptyStateSubtitleLabelTrailingInset)
+        }
+        
+        customTabBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.height.equalTo(k.customTabBarHeight)
+        }
+        
+        centerLabel.snp.makeConstraints { make in
+            make.top.equalTo(customTabBar.snp.top).offset(k.centerLabelTopOffset)
+            make.centerX.equalToSuperview()
         }
         
         loadingView.snp.makeConstraints { make in

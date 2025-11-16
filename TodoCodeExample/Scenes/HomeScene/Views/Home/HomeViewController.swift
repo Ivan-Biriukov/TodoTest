@@ -5,9 +5,6 @@ protocol HomeViewPresentable: AnyObject {
     func showLoading()
     func hideLoading()
     func showError(_ message: String)
-    func updateTodo(at indexPath: IndexPath)
-    func deleteTodo(at indexPath: IndexPath)
-    func insertTodo(at indexPath: IndexPath)
 }
 
 //MARK: - HomeViewController
@@ -38,36 +35,42 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setupNavigationBar()
         setupTableView()
         setupCallbacks()
         
         presenter.viewDidLoad()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        showNavBar(show: false)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        showNavBar(show: true)
+    }
 }
 
 //MARK: - Private Methods
 private extension HomeViewController {
-//    private func setupNavigationBar() {
-//        // Скрываем стандартный navigation bar
-//        navigationController?.setNavigationBarHidden(true, animated: false)
-//    }
-    
     private func setupTableView() {
         contentView.tableView.delegate = self
         contentView.tableView.dataSource = self
     }
     
     private func setupCallbacks() {
-        // Кнопка добавления -> presenter
         contentView.onAddButtonTapped = { [weak self] in
             self?.presenter.didTapAddTodo()
         }
         
-        // Поиск -> presenter
         contentView.onSearchTextChanged = { [weak self] query in
             self?.presenter.didSearchTodos(with: query)
         }
+    }
+    
+    private func showNavBar(show: Bool) {
+        navigationController?.setNavigationBarHidden(!show, animated: false)
     }
 }
 
@@ -89,21 +92,6 @@ extension HomeViewController: HomeViewPresentable {
     
     func showError(_ message: String) {
         showAlert(message: message)
-    }
-    
-    func updateTodo(at indexPath: IndexPath) {
-        print("Update todo at \(indexPath)")
-        // TODO: Обновить ячейку таблицы
-    }
-    
-    func deleteTodo(at indexPath: IndexPath) {
-        print("Delete todo at \(indexPath)")
-        // TODO: Удалить ячейку таблицы
-    }
-    
-    func insertTodo(at indexPath: IndexPath) {
-        print("Insert todo at \(indexPath)")
-        // TODO: Добавить ячейку таблицы
     }
 }
 

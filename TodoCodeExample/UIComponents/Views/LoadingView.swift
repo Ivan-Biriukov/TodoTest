@@ -1,26 +1,38 @@
 import UIKit
 import SnapKit
 
+fileprivate struct Constants {
+    let messageLabelFontSize: CGFloat = 16
+    
+    let activityIndicatorCenterYOffset: CGFloat = 20
+    
+    let messageLabelTopOffset: CGFloat = 16
+    let messageLabelLeadingOffset: CGFloat = 20
+    let messageLabelTrailingInsets: CGFloat = 20
+}
+
 final class LoadingView: UIView {
+    private let k = Constants()
+    
     // MARK: - UI Components
-    private let blurEffectView: UIVisualEffectView = {
+    private lazy var blurEffectView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: .dark)
         let view = UIVisualEffectView(effect: blurEffect)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    private let activityIndicator: UIActivityIndicatorView = {
+    private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.color = .systemYellow
         return indicator
     }()
     
-    private let messageLabel: UILabel = {
+    private lazy var messageLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.font = .systemFont(ofSize: 16, weight: .medium)
+        lbl.font = .systemFont(ofSize: k.messageLabelFontSize, weight: .medium)
         lbl.textColor = .white
         lbl.textAlignment = .center
         lbl.text = "Загрузка..."
@@ -53,14 +65,14 @@ private extension LoadingView {
         
         activityIndicator.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(-20)
+            make.centerY.equalToSuperview().offset(-k.activityIndicatorCenterYOffset)
         }
         
         messageLabel.snp.makeConstraints { make in
-            make.top.equalTo(activityIndicator.snp.bottom).offset(16)
+            make.top.equalTo(activityIndicator.snp.bottom).offset(k.messageLabelTopOffset)
             make.centerX.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview().offset(20)
-            make.trailing.lessThanOrEqualToSuperview().inset(20)
+            make.leading.greaterThanOrEqualToSuperview().offset(k.messageLabelLeadingOffset)
+            make.trailing.lessThanOrEqualToSuperview().inset(k.messageLabelTrailingInsets)
         }
     }
 }

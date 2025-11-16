@@ -1,57 +1,82 @@
 import UIKit
 import SnapKit
 
-final class DetailView: UIView {
+fileprivate struct Constants {
+    let titleLableFontSize: CGFloat = 34
+    let labelsLineLimit: Int = 0
+    let dateLabelFontSize: CGFloat = 14
+    let descrLabelFontSize: CGFloat = 17
+    let complitLabelFontSize: CGFloat = 17
     
+    let titleLabelTopOffse: CGFloat = 20
+    let titleLabelLeadingOffset: CGFloat = 16
+    let titleLabelTrailingInset: CGFloat = 16
+    
+    let dateLabelTopOffset: CGFloat = 8
+    let dateLabelLeadingOffset: CGFloat = 16
+    let dateLabelTrailingInset: CGFloat = 16
+    
+    let descriptionLabelTopOffset: CGFloat = 32
+    let descriptionLabelLeadingOffset: CGFloat = 16
+    let descriptionLabelTrailingInsets: CGFloat = 16
+    
+    let completedLabelTopOffset: CGFloat = 40
+    let completedLabelLeadingOffset: CGFloat = 20
+    let completedLabelBottomInsets: CGFloat = 20
+    
+    let completedSwitchTrailingInsets: CGFloat = 16
+}
+
+//MARK: - DetailView
+final class DetailView: UIView {
     var onSaveTapped: (() -> Void)?
     var onDeleteTapped: (() -> Void)?
     
+    private let k = Constants()
+    
     // MARK: - UI Components
-    private let scrollView: UIScrollView = {
+    
+    private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.keyboardDismissMode = .interactive
         return sv
     }()
     
-    private let contentView = UIView()
+    private lazy var contentView = UIView()
     
-    // Заголовок задачи (большой, как на картинке)
-    let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let lbl = UILabel()
-        lbl.font = .systemFont(ofSize: 34, weight: .bold)
+        lbl.font = .systemFont(ofSize: k.titleLableFontSize, weight: .bold)
         lbl.textColor = .white
-        lbl.numberOfLines = 0
+        lbl.numberOfLines = k.labelsLineLimit
         return lbl
     }()
     
-    // Дата создания
-    private let dateLabel: UILabel = {
+    private lazy var dateLabel: UILabel = {
         let lbl = UILabel()
-        lbl.font = .systemFont(ofSize: 14)
+        lbl.font = .systemFont(ofSize: k.dateLabelFontSize)
         lbl.textColor = .systemGray2
         return lbl
     }()
     
-    // Описание (из картинки - это текстовый блок)
-    private let descriptionLabel: UILabel = {
+    private lazy var descriptionLabel: UILabel = {
         let lbl = UILabel()
-        lbl.font = .systemFont(ofSize: 17)
+        lbl.font = .systemFont(ofSize: k.descrLabelFontSize)
         lbl.textColor = .white
-        lbl.numberOfLines = 0
+        lbl.numberOfLines = k.labelsLineLimit
         return lbl
     }()
     
-    // Свитч "Выполнено"
-    let completedSwitch: UISwitch = {
+    lazy var completedSwitch: UISwitch = {
         let sw = UISwitch()
         sw.onTintColor = .systemYellow
         return sw
     }()
     
-    private let completedLabel: UILabel = {
+    private lazy var completedLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "Отметить как выполненное"
-        lbl.font = .systemFont(ofSize: 17)
+        lbl.font = .systemFont(ofSize: k.complitLabelFontSize)
         lbl.textColor = .white
         return lbl
     }()
@@ -78,7 +103,6 @@ final class DetailView: UIView {
         contentView.addSubview(completedLabel)
         contentView.addSubview(completedSwitch)
         
-        // Добавляем слушатель на изменение свитча
         completedSwitch.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         
         scrollView.snp.makeConstraints { make in
@@ -91,32 +115,32 @@ final class DetailView: UIView {
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.top.equalToSuperview().offset(k.titleLabelTopOffse)
+            make.leading.equalToSuperview().offset(k.titleLabelLeadingOffset)
+            make.trailing.equalToSuperview().inset(k.titleLabelTrailingInset)
         }
         
         dateLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(titleLabel.snp.bottom).offset(k.dateLabelTopOffset)
+            make.leading.equalToSuperview().offset(k.dateLabelLeadingOffset)
+            make.trailing.equalToSuperview().inset(k.dateLabelTrailingInset)
         }
         
         descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(dateLabel.snp.bottom).offset(32)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(dateLabel.snp.bottom).offset(k.descriptionLabelTopOffset)
+            make.leading.equalToSuperview().offset(k.descriptionLabelLeadingOffset)
+            make.trailing.equalToSuperview().inset(k.descriptionLabelTrailingInsets)
         }
         
         completedLabel.snp.makeConstraints { make in
-            make.top.equalTo(descriptionLabel.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(16)
-            make.bottom.lessThanOrEqualToSuperview().inset(20)
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(k.completedLabelTopOffset)
+            make.leading.equalToSuperview().offset(k.completedLabelTopOffset)
+            make.bottom.lessThanOrEqualToSuperview().inset(k.completedLabelBottomInsets)
         }
         
         completedSwitch.snp.makeConstraints { make in
             make.centerY.equalTo(completedLabel)
-            make.trailing.equalToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(k.completedSwitchTrailingInsets)
         }
     }
     
@@ -132,7 +156,6 @@ final class DetailView: UIView {
         dateFormatter.dateFormat = "dd/MM/yy"
         dateLabel.text = dateFormatter.string(from: todo.creationDate)
         
-        // Описание пока пустое (можно расширить модель позже)
         descriptionLabel.text = "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике."
     }
 }

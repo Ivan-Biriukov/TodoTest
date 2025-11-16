@@ -1,13 +1,34 @@
 import UIKit
 import SnapKit
 
+fileprivate struct Constants {
+    let titleLabelFontSize: CGFloat = 17
+    let titleLabelLineLimits: Int = 2
+    
+    let descriptionLabelFontSize: CGFloat = 14
+    let descriptionLabelLineLimit: Int = 2
+    
+    let dateLabelFontSize: CGFloat = 12
+    let containerStackViewSpacing: CGFloat = 4
+    
+    let checkmarkButtonLeadingOffset: CGFloat = 16
+    let checkmarkButtonSize: CGFloat = 28
+    
+    let containerStackViewLeadingOffset: CGFloat = 12
+    let containerStackViewTrailingInset: CGFloat = 16
+    let containerStackViewTopOffset: CGFloat = 12
+    let containerStackViewBottomInset: CGFloat = 12
+}
+
 final class TodoTableViewCell: UITableViewCell {
     static let reuseIdentifier = "TodoTableViewCell"
     
     var onCheckmarkTapped: (() -> Void)?
     
+    private let k = Constants()
+    
     // MARK: - UI Components
-    private let checkmarkButton: UIButton = {
+    private lazy var  checkmarkButton: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
         btn.tintColor = .systemYellow
@@ -16,37 +37,37 @@ final class TodoTableViewCell: UITableViewCell {
         return btn
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.font = .systemFont(ofSize: 17, weight: .medium)
+        lbl.font = .systemFont(ofSize: k.titleLabelFontSize, weight: .medium)
         lbl.textColor = .white
-        lbl.numberOfLines = 2
+        lbl.numberOfLines = k.titleLabelLineLimits
         return lbl
     }()
     
-    private let descriptionLabel: UILabel = {
+    private lazy var  descriptionLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.font = .systemFont(ofSize: 14, weight: .regular)
+        lbl.font = .systemFont(ofSize: k.descriptionLabelFontSize, weight: .regular)
         lbl.textColor = .systemGray
-        lbl.numberOfLines = 2
+        lbl.numberOfLines = k.descriptionLabelLineLimit
         return lbl
     }()
     
-    private let dateLabel: UILabel = {
+    private lazy var  dateLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.font = .systemFont(ofSize: 12, weight: .regular)
+        lbl.font = .systemFont(ofSize: k.dateLabelFontSize, weight: .regular)
         lbl.textColor = .systemGray2
         return lbl
     }()
     
-    private let containerStackView: UIStackView = {
+    private lazy var  containerStackView: UIStackView = {
         let sv = UIStackView()
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.axis = .vertical
-        sv.spacing = 4
+        sv.spacing = k.containerStackViewSpacing
         sv.alignment = .leading
         return sv
     }()
@@ -88,16 +109,16 @@ private extension TodoTableViewCell {
         checkmarkButton.addTarget(self, action: #selector(checkmarkTapped), for: .touchUpInside)
         
         checkmarkButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
+            make.leading.equalToSuperview().offset(k.checkmarkButtonLeadingOffset)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(28)
+            make.width.height.equalTo(k.checkmarkButtonSize)
         }
         
         containerStackView.snp.makeConstraints { make in
-            make.leading.equalTo(checkmarkButton.snp.trailing).offset(12)
-            make.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().offset(12)
-            make.bottom.equalToSuperview().inset(12)
+            make.leading.equalTo(checkmarkButton.snp.trailing).offset(k.containerStackViewLeadingOffset)
+            make.trailing.equalToSuperview().inset(k.containerStackViewTrailingInset)
+            make.top.equalToSuperview().offset(k.containerStackViewTopOffset)
+            make.bottom.equalToSuperview().inset(k.containerStackViewBottomInset)
         }
     }
     
@@ -121,9 +142,6 @@ private extension TodoTableViewCell {
 extension TodoTableViewCell {
     func configure(with todo: UITodoItem) {
         titleLabel.text = todo.todoDescription
-        
-        // Показываем/скрываем description (у вас пока нет в модели, но можно добавить)
-        descriptionLabel.isHidden = true // todo.taskDescription?.isEmpty ?? true
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yy"
