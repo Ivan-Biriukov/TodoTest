@@ -6,6 +6,7 @@ protocol HomeBusinessLogic {
     func deleteTodo(at index: Int)
     func searchTodos(query: String)
     func addTodo(_ todo: UITodoItem)
+    func updateTodo(_ todo: UITodoItem, at index: Int)
 }
 
 final class HomeInteractor {
@@ -102,6 +103,21 @@ extension HomeInteractor: HomeBusinessLogic {
             
             DispatchQueue.main.async {
                 self.presenter?.didAddTodo(todo)
+            }
+        }
+    }
+    
+    func updateTodo(_ todo: UITodoItem, at index: Int) {
+        guard index < allTodos.count else { return }
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            
+            self.allTodos[index] = todo
+            self.storage.updateTask(todo)
+            
+            DispatchQueue.main.async {
+                self.presenter?.didToggleTodoCompletion(updatedTodo: todo, at: index)
             }
         }
     }

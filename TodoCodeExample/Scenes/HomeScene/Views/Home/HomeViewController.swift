@@ -38,7 +38,7 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
+//        setupNavigationBar()
         setupTableView()
         setupCallbacks()
         
@@ -48,10 +48,10 @@ final class HomeViewController: UIViewController {
 
 //MARK: - Private Methods
 private extension HomeViewController {
-    private func setupNavigationBar() {
-        // Скрываем стандартный navigation bar
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
+//    private func setupNavigationBar() {
+//        // Скрываем стандартный navigation bar
+//        navigationController?.setNavigationBarHidden(true, animated: false)
+//    }
     
     private func setupTableView() {
         contentView.tableView.delegate = self

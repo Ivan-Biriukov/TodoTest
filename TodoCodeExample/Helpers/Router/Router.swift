@@ -42,21 +42,69 @@ extension Router {
 
 //MARK: - Home View Routes
 extension Router: HomeRoutes {
-    static func navigateToTodoDetail(todo: UITodoItem) {
-        // TODO: Реализовать когда будет готов DetailFactory
-        print("Navigate to detail for todo: \(todo.todoDescription)")
+    
+    static func navigateToTodoDetail(
+        from presenter: HomeViewPresenterProtocol,
+        todo: UITodoItem,
+        index: Int
+    ) {
+        let detailVC = DetailViewController(
+            presenter: presenter,
+            todo: todo,
+            index: index
+        )
         
-        // Пока заглушка, потом заменим на:
-        // let context = DetailFactory.Context(todo: todo)
-        // performRoute(factory: DetailFactory(), context: context)
+        navigationController.pushViewController(detailVC, animated: true)
     }
     
     static func navigateToAddTodo(completion: @escaping (UITodoItem) -> Void) {
-        // TODO: Реализовать когда будет готов AddTodoFactory
-        print("Navigate to add todo")
+        let alert = UIAlertController(
+            title: "Новая задача",
+            message: nil,
+            preferredStyle: .alert
+        )
         
-        // Пока заглушка, потом заменим на:
-        // let context = AddTodoFactory.Context(completion: completion)
-        // performPopUpRoute(factory: AddTodoFactory(), context: context)
+        alert.addTextField { textField in
+            textField.placeholder = "Название задачи"
+            textField.autocapitalizationType = .sentences
+        }
+        
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+        
+        let addAction = UIAlertAction(title: "Добавить", style: .default) { _ in
+            guard let titleField = alert.textFields?[0],
+                  let title = titleField.text,
+                  !title.isEmpty else {
+                return
+            }
+            
+            var newTodo = UITodoItem()
+            newTodo.todoDescription = title
+            
+            completion(newTodo)
+        }
+        
+        alert.addAction(addAction)
+        
+        navigationController.visibleViewController?.present(alert, animated: true)
     }
 }
+//extension Router: HomeRoutes {
+//    static func navigateToTodoDetail(todo: UITodoItem) {
+//        // TODO: Реализовать когда будет готов DetailFactory
+//        print("Navigate to detail for todo: \(todo.todoDescription)")
+//        
+//        // Пока заглушка, потом заменим на:
+//        // let context = DetailFactory.Context(todo: todo)
+//        // performRoute(factory: DetailFactory(), context: context)
+//    }
+//    
+//    static func navigateToAddTodo(completion: @escaping (UITodoItem) -> Void) {
+//        // TODO: Реализовать когда будет готов AddTodoFactory
+//        print("Navigate to add todo")
+//        
+//        // Пока заглушка, потом заменим на:
+//        // let context = AddTodoFactory.Context(completion: completion)
+//        // performPopUpRoute(factory: AddTodoFactory(), context: context)
+//    }
+//}

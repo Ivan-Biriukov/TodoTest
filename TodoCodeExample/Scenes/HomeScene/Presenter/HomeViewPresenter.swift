@@ -8,6 +8,7 @@ protocol HomeViewPresenterProtocol: AnyObject {
     func didTapAddTodo()
     func didTapDeleteTodo(at index: Int)
     func didSearchTodos(with query: String)
+    func didUpdateTodo(_ todo: UITodoItem, at index: Int)
 }
 
 // MARK: - Протокол для Interactor -> Presenter (обратная связь)
@@ -36,13 +37,19 @@ extension HomeViewPresenter: HomeViewPresenterProtocol {
         view?.showLoading()
         interactor?.fetchTodos()
     }
+
     
     func didSelectTodo(at index: Int) {
         let todosToUse = isSearching ? filteredTodos : todos
         guard index < todosToUse.count else { return }
         
         let todo = todosToUse[index]
-        Routes.navigateToTodoDetail(todo: todo)
+        
+        // Находим реальный индекс в основном массиве
+        guard let mainIndex = todos.firstIndex(where: { $0.id == todo.id }) else { return }
+        
+        // Передаем self (presenter) в Router
+        Routes.navigateToTodoDetail(from: self, todo: todo, index: mainIndex)
     }
     
     func didToggleTodoCompletion(at index: Int) {
@@ -79,6 +86,10 @@ extension HomeViewPresenter: HomeViewPresenterProtocol {
             isSearching = true
             interactor?.searchTodos(query: query)
         }
+    }
+    
+    func didUpdateTodo(_ todo: UITodoItem, at index: Int) {
+        interactor?.updateTodo(todo, at: index)
     }
 }
 
