@@ -44,7 +44,6 @@ extension HomeViewPresenter: HomeViewPresenterProtocol {
         
         let todo = todosToUse[index]
         Routes.navigateToTodoDetail(todo: todo)
-//        router?.navigateToTodoDetail(todo: todo)
     }
     
     func didToggleTodoCompletion(at index: Int) {
