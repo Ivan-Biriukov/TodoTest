@@ -1,15 +1,26 @@
 import UIKit
+import CoreData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
+    var context: NSManagedObjectContext!
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+
         guard let windowScene = (scene as? UIWindowScene) else { return }
+
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        context = appDelegate?.persistentContainer.viewContext
         
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = Router.startRouting()
-        //TODO: - call mainScreen func
+
+        Router.homeScreen(coreDataContext: context)
+
         window?.makeKeyAndVisible()
     }
 
@@ -22,4 +33,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {}
 
     func sceneDidEnterBackground(_ scene: UIScene) {}
+
 }
