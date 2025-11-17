@@ -34,10 +34,17 @@ final class DetailViewController: UIViewController {
         contentView.onSaveTapped = { [weak self] in
             self?.saveChanges()
         }
+        
+        contentView.onTextChanged = { [weak self] newText in
+            self?.currentTodo.todoDescription = newText
+            self?.saveChanges()
+        }
     }
     
     private func saveChanges() {
         currentTodo.isComplited = contentView.completedSwitch.isOn
+        currentTodo.todoDescription = contentView.descriptionTextView.text
+        
         presenter.didUpdateTodo(currentTodo, at: todoIndex)
     }
 }

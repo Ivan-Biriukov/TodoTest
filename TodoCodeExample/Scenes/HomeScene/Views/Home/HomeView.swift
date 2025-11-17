@@ -302,6 +302,22 @@ private extension HomeView {
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         searchBar.delegate = self
     }
+    
+    private func russianPluralForm(for count: Int, one: String, few: String, many: String) -> String {
+        let n = abs(count)
+        let mod100 = n % 100
+        if mod100 >= 11 && mod100 <= 14 {
+            return many
+        }
+        switch n % 10 {
+        case 1:
+            return one
+        case 2...4:
+            return few
+        default:
+            return many
+        }
+    }
 }
 
 //MARK: Actions
@@ -332,17 +348,16 @@ extension HomeView {
     }
     
     func updateCenterLabel(with todosCount: Int) {
-        let text: String
-        switch todosCount {
-        case 0:
-            text = "Нет задач"
-        case 1:
-            text = "1 задача"
-        case 2...4:
-            text = "\(todosCount) задачи"
-        default:
-            text = "\(todosCount) задач"
+        if todosCount == 0 {
+            centerLabel.text = "Нет задач"
+            return
         }
-        centerLabel.text = text
+        let word = russianPluralForm(
+            for: todosCount,
+            one: "задача",
+            few: "задачи",
+            many: "задач"
+        )
+        centerLabel.text = "\(todosCount) \(word)"
     }
 }

@@ -64,7 +64,7 @@ extension Router: HomeRoutes {
         )
         
         alert.addTextField { textField in
-            textField.placeholder = "Название задачи"
+            textField.placeholder = "Опишите задачу"
             textField.autocapitalizationType = .sentences
         }
         
